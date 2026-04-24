@@ -9,7 +9,7 @@ using MediatR;
 
 namespace GoodHamburguerApp.Application.UseCases.Pedidos.Queries.GetAllPedidos
 {
-    public class GetAllPedidosQueryHandler : IRequestHandler<GetAllPedidosQuery, IEnumerable<PedidoDTO>>
+    public class GetAllPedidosQueryHandler : IRequestHandler<GetAllPedidosQuery, PagedData<PedidoDTO>>
     {
         private readonly IPedidoRepository _pedidoRepository;
         private readonly IMapper _mapper;
@@ -20,10 +20,11 @@ namespace GoodHamburguerApp.Application.UseCases.Pedidos.Queries.GetAllPedidos
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PedidoDTO>> Handle(GetAllPedidosQuery request, CancellationToken cancellationToken)
+        public async Task<PagedData<PedidoDTO>> Handle(GetAllPedidosQuery request, CancellationToken cancellationToken)
         {
-            var pedidos = await _pedidoRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<PedidoDTO>>(pedidos);
+            var (pedidos, totalCount) = await _pedidoRepository.GetAllAsync(request.Offset, request.Limit, cancellationToken);
+            var pedidosDto = _mapper.Map<IReadOnlyList<PedidoDTO>>(pedidos);
+            return new PagedData<PedidoDTO>(pedidosDto, totalCount, request.Offset, request.Limit);
         }
     }
 }
