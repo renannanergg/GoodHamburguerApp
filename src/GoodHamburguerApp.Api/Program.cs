@@ -1,3 +1,4 @@
+using GoodHamburguerApp.Api.Configuration;
 using GoodHamburguerApp.Api.Middleware;
 using GoodHamburguerApp.IoC;
 
@@ -7,7 +8,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
- 
+
+builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
@@ -30,6 +32,9 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

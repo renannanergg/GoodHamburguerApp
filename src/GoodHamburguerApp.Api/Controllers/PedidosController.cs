@@ -6,6 +6,7 @@ using GoodHamburguerApp.Application.UseCases.Pedidos.Commands;
 using GoodHamburguerApp.Application.UseCases.Pedidos.Queries.GetAllPedidos;
 using GoodHamburguerApp.Application.UseCases.Pedidos.Queries.GetPedidoById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoodHamburguerApp.Api.Controllers
@@ -13,6 +14,7 @@ namespace GoodHamburguerApp.Api.Controllers
     [ApiVersion("1.0")] 
     [Route("api/v{version:apiVersion}/[controller]")] 
     [ApiController]
+    [Authorize]
     public class PedidosController : MainController
     {
         private readonly IMediator _mediator;
@@ -26,6 +28,7 @@ namespace GoodHamburguerApp.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<PedidoDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAll([FromQuery] int offset = 0, [FromQuery] int limit = 10)
         {
             _logger.LogInformation("Iniciando consulta para listar pedidos.");
@@ -38,6 +41,7 @@ namespace GoodHamburguerApp.Api.Controllers
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(ApiResponse<PedidoDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetById(int id)
         {
             _logger.LogInformation("Iniciando consulta para obter pedido com ID {Id}.", id);
@@ -52,6 +56,7 @@ namespace GoodHamburguerApp.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<int>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] CreatePedidoCommand command)
         { 
             _logger.LogInformation("Iniciando criação de um novo pedido.");
@@ -69,6 +74,7 @@ namespace GoodHamburguerApp.Api.Controllers
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Update(int id, [FromBody] UpdatePedidoCommand command)
         {
             _logger.LogInformation("Iniciando atualização do pedido com ID {Id}.", id);
@@ -86,6 +92,7 @@ namespace GoodHamburguerApp.Api.Controllers
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Delete(int id)
         {
             _logger.LogInformation("Iniciando exclusão do pedido com ID {Id}.", id);
