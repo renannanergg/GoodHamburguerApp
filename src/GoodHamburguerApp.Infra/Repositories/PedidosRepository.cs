@@ -13,12 +13,20 @@ namespace GoodHamburguerApp.Infra.Repositories
             _context = context;
         }
         public void Add(Pedido pedido) => _context.Pedidos.Add(pedido);
-        public async Task<IEnumerable<Pedido>> GetAllAsync()
+        public async Task<(IReadOnlyList<Pedido> Pedidos, int TotalCount)> GetAllAsync(int offset = 0, int limit = 10, CancellationToken cancellationToken = default)
         {
-            return await _context.Pedidos
+            var query = _context.Pedidos
                 .Include(p => p.Itens)
-                .AsNoTracking() 
-                .ToListAsync();
+                .AsNoTracking();
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            var pedidos = await query
+                .OrderBy(p => p.Id)
+                .Skip(offset)
+                .Take(limit)
+                .ToListAsync(cancellationToken);
+
+            return (pedidos, totalCount);
         }
 
         public async Task<Pedido?> GetByIdAsync(int id)

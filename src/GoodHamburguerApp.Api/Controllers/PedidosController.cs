@@ -14,19 +14,19 @@ namespace GoodHamburguerApp.Api.Controllers
     public class PedidosController : MainController
     {
         private readonly IMediator _mediator;
-        private readonly ILogger _logger;
-        public PedidosController(IMediator mediator, ILogger logger)
+        private readonly ILogger<PedidosController> _logger;
+        public PedidosController(IMediator mediator, ILogger<PedidosController> logger)
         {
             _mediator = mediator;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int offset = 0, [FromQuery] int limit = 10)
         {
-            _logger.LogInformation("Iniciando consulta para listar todos os pedidos.");
+            _logger.LogInformation("Iniciando consulta para listar pedidos.");
 
-            var query = new GetAllPedidosQuery();
+            var query = new GetAllPedidosQuery(offset, limit);
             var result = await _mediator.Send(query);
             return CustomResponse(result, "Pedidos listados com sucesso.");
         }
