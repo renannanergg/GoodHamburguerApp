@@ -6,4 +6,7 @@
     <Project Path="src/GoodHamburguerApp.Infra/GoodHamburguerApp.Infra.csproj" />
     <Project Path="src/GoodHamburguerApp.IoC/GoodHamburguerApp.IoC.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GoodHamburguerApp.UnitTests/GoodHamburguerApp.UnitTests.csproj" />
+  </Folder>
 </Solution>
