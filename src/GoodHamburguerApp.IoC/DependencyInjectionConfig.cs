@@ -38,8 +38,7 @@ namespace GoodHamburguerApp.IoC
 
             // AutoMapper
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
-            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
+            
             services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);

@@ -1,6 +1,7 @@
 
 
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using GoodHamburguerApp.Application.DTOs;
 using GoodHamburguerApp.Application.UseCases.Itens.Queries;
 using MediatR;
