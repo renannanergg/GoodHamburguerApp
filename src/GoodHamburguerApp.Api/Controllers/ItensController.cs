@@ -1,13 +1,16 @@
 
 
+using Asp.Versioning;
+using GoodHamburguerApp.Application.DTOs;
 using GoodHamburguerApp.Application.UseCases.Itens.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoodHamburguerApp.Api.Controllers
 {
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [Route("api/[controller]")]
     public class ItensController : MainController
     {
         private readonly IMediator _mediator;
@@ -19,6 +22,8 @@ namespace GoodHamburguerApp.Api.Controllers
         }
 
         [HttpGet("cardapio")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<ItemDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCardapio([FromQuery] int offset = 0, [FromQuery] int limit = 10)
         {
             _logger.LogInformation("Iniciando a consulta paginada do cardápio.");

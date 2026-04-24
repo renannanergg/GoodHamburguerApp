@@ -1,4 +1,5 @@
 using System.Reflection;
+using Asp.Versioning;
 using FluentValidation;
 using GoodHamburguerApp.Application.Behaviors;
 using GoodHamburguerApp.Application.Mappings;
@@ -28,18 +29,35 @@ namespace GoodHamburguerApp.IoC
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            // MediatR e Behaviors
             services.AddMediatR(cfg => 
             {
-                // Usa o Behavior para achar o projeto Application
                 cfg.RegisterServicesFromAssembly(typeof(ValidationBehavior<,>).Assembly);
-                
-                // Registra o middleware de validação
                 cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             });
 
-            // Validadores FluentValidation e behaviros 
+            // AutoMapper
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new HeaderApiVersionReader("x-api-version")
+                );
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
+            services.ConfigureOptions<ConfigureSwaggerOptions>();
+            services.AddSwaggerGen();
         }
     }
 }
