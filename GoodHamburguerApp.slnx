@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GoodHamburguerApp.Api/GoodHamburguerApp.Api.csproj" />
+    <Project Path="src/GoodHamburguerApp.Application/GoodHamburguerApp.Application.csproj" />
+    <Project Path="src/GoodHamburguerApp.Domain/GoodHamburguerApp.Domain.csproj" />
+    <Project Path="src/GoodHamburguerApp.Infra/GoodHamburguerApp.Infra.csproj" />
+    <Project Path="src/GoodHamburguerApp.IoC/GoodHamburguerApp.IoC.csproj" />
+  </Folder>
+</Solution>
