@@ -29,6 +29,9 @@ namespace GoodHamburguerApp.IoC
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            // Cache
+            services.AddMemoryCache();
+
             // MediatR e Behaviors
             services.AddMediatR(cfg => 
             {
