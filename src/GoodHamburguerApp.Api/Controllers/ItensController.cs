@@ -30,6 +30,7 @@ namespace GoodHamburguerApp.Api.Controllers
             _logger.LogInformation("Iniciando a consulta paginada do cardápio.");
 
             var result = await _mediator.Send(new GetCardapioQuery(offset, limit));
+
             return CustomResponse(result, "Cardápio listado com sucesso.");
         }
     }
