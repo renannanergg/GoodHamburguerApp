@@ -14,14 +14,13 @@ namespace GoodHamburguerApp.Application.UseCases.Itens.Queries
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
         private const string CachePrefix = "Cardapio";
-        private readonly ILogger<GetCardapioQueryHandler> _logger;
+        
 
-        public GetCardapioQueryHandler(IItemRepository repository, IMapper mapper, IMemoryCache cache, ILogger<GetCardapioQueryHandler> logger)
+        public GetCardapioQueryHandler(IItemRepository repository, IMapper mapper, IMemoryCache cache)
         {
             _mapper = mapper;
             _repository = repository;
             _cache = cache;
-            _logger = logger;
         }
 
         public async Task<PagedData<ItemDTO>> Handle(GetCardapioQuery request, CancellationToken cancellationToken)

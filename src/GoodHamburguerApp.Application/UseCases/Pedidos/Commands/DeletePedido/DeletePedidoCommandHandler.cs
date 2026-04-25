@@ -1,6 +1,7 @@
 
 
-    using GoodHamburguerApp.Domain.Interfaces;
+using GoodHamburguerApp.Domain.Exceptions;
+using GoodHamburguerApp.Domain.Interfaces;
     using MediatR;
 
     namespace GoodHamburguerApp.Application.UseCases.Pedidos.Commands
@@ -20,12 +21,18 @@
             public async Task<bool> Handle(DeletePedidoCommand request, CancellationToken cancellationToken)
             {
                 var pedido = await _pedidoRepository.GetByIdAsync(request.Id);
-                if (pedido == null) return false;
+                if (pedido == null)
+                    return false;
 
 
                 _pedidoRepository.Remove(pedido);
-                
-                return await _uow.Commit();
-            }
+
+                var sucesso = await _uow.Commit();
+
+                if (!sucesso)
+                    throw new DomainException("Não foi possível excluir o pedido no momento.");
+
+                return true;
+        }
         }
     }
