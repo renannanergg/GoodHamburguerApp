@@ -35,7 +35,9 @@ namespace GoodHamburguerApp.Domain.Entities
         public void LimparItens()
         {
             _itens.Clear();
+            Subtotal = 0;
             Desconto = 0;
+            Total = 0;
         }
 
         private void CalcularTotal()

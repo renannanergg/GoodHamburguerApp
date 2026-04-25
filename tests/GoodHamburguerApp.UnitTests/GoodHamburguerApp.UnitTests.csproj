@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+	<TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\GoodHamburguerApp.Application\GoodHamburguerApp.Application.csproj" />
     <ProjectReference Include="..\..\src\GoodHamburguerApp.Domain\GoodHamburguerApp.Domain.csproj" />
+	<ProjectReference Include="..\..\src\GoodHamburguerApp.Api\GoodHamburguerApp.Api.csproj" />
   </ItemGroup>
 
 </Project>
