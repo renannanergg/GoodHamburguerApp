@@ -5,7 +5,9 @@
     <Project Path="src/GoodHamburguerApp.Domain/GoodHamburguerApp.Domain.csproj" />
     <Project Path="src/GoodHamburguerApp.Infra/GoodHamburguerApp.Infra.csproj" />
     <Project Path="src/GoodHamburguerApp.IoC/GoodHamburguerApp.IoC.csproj" />
-    <Project Path="src/GoodHamburguerApp.Web/GoodHamburguerApp.Web.csproj" />
+    <Project Path="src/GoodHamburguerApp.Web/GoodHamburguerApp.Web.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/GoodHamburguerApp.IntegrationTests/GoodHamburguerApp.IntegrationTests.csproj" />
