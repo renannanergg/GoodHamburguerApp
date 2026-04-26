@@ -9,7 +9,7 @@ namespace GoodHamburguerApp.Domain.Entities
         public CategoriaItem Categoria { get; private set; }
         public string Descricao { get; private set; }
 
-        // Propriedade de navegação para o EF
+       
         private readonly List<Pedido> _pedidos = new();
         public IReadOnlyCollection<Pedido> Pedidos => _pedidos;
 

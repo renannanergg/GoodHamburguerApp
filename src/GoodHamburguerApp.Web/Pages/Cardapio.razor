@@ -141,11 +141,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Carrega o cardápio (aumentei o limite para garantir que todos apareçam)
+        
         var response = await Http.GetFromJsonAsync<ApiResponse<PagedData<ItemDTO>>>("api/v1/itens/cardapio?limit=50");
         cardapio = response?.Data?.Items?.ToList();
 
-        // Se houver um ID na URL, carrega os dados do pedido para edição
         if (Id.HasValue)
         {
             await CarregarPedidoParaEdicao();
@@ -218,13 +217,13 @@
 
         if (Id.HasValue)
         {
-            // MODO EDIÇÃO (PUT)
+           
             var command = new UpdatePedidoCommand { Id = Id.Value, ItensIds = carrinho.Select(i => i.Id).ToList() };
             response = await Http.PutAsJsonAsync($"api/v1/pedidos/{Id}", command);
         }
         else
         {
-            // MODO CRIAÇÃO (POST)
+           
             var command = new CreatePedidoCommand { ItensIds = carrinho.Select(i => i.Id).ToList() };
             response = await Http.PostAsJsonAsync("api/v1/pedidos", command);
         }

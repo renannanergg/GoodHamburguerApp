@@ -10,15 +10,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddBlazoredLocalStorage();
 
-// 2. REGISTRE O HANDLER AQUI (No Web)
 builder.Services.AddTransient<JwtHandler>();
 
-// 3. CONFIGURE O HTTPCLIENT AQUI (No Web)
 builder.Services.AddHttpClient("GoodHamburguerAPI", client =>
-    client.BaseAddress = new Uri("https://localhost:7178/")) // Porta da sua API
+    client.BaseAddress = new Uri("https://localhost:7178/")) 
     .AddHttpMessageHandler<JwtHandler>();
 
-// 4. REGISTRE O CLIENTE PADRÃO (No Web)
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
     .CreateClient("GoodHamburguerAPI"));
 await builder.Build().RunAsync();
