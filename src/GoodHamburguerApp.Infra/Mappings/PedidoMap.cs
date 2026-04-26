@@ -30,7 +30,6 @@ namespace GoodHamburguerApp.Infra.Mappings
                 .WithMany(i => i.Pedidos)
                 .UsingEntity(j => j.ToTable("PedidoItens")); // Nome da tabela no SQL
 
-            // Garantir que o EF use o campo privado _itens (Backing Field)
             var navigation = builder.Metadata.FindNavigation(nameof(Pedido.Itens));
             navigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
         }

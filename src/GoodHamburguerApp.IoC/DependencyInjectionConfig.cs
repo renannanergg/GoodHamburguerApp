@@ -42,6 +42,7 @@ namespace GoodHamburguerApp.IoC
             // AutoMapper
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
             
+            // Versionamento da API
             services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -58,6 +59,7 @@ namespace GoodHamburguerApp.IoC
                 options.SubstituteApiVersionInUrl = true;
             });
 
+            // Swagger
             services.ConfigureOptions<ConfigureSwaggerOptions>();
             services.AddSwaggerGen();
         }
