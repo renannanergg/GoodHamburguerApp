@@ -136,15 +136,13 @@ dotnet test
 ----------
 
 
+## Oque Ficou em Segundo Plano ?
 
-## 🚀 O que foi deixado de fora do Projeto
-
-
-Embora o projeto esteja funcional e siga as melhores práticas de arquitetura, alguns melhorias foram deixadas para manter o foco no Domínio e na Arquitetura durante o desafio técnico:
+O projeto desenvolvido nesse desafio está funcional, com foco na modelagem correta do Domínio,  implementação de Padrões de Projeto e boas práticas de Arquitetura, porém durante o desafio identifiquei o seguintes pontos de melhorias que foram deixadas em segundo plano e próximas features que eu implementaria para aprimorar ainda mais o projeto:
 
 ---
 ### Mensageria (Event-Driven): 
-Utilização de Kafka para processamento assíncrono de pedidos e comunicação entre microserviços.
+Utilização de mensageria com Kafka para processamento assíncrono de pedidos .
 
 --- 
 ### Idempotência de Requisições: 
@@ -154,11 +152,13 @@ Implementação de chaves de idempotência (Idempotency-Key) nos endpoints de cr
 ### Health Checks: 
 Implementação de endpoints /health para monitoramento do status do banco de dados e serviços dependentes por ferramentas de orquestração.
 
+---
 ### Refresh Tokens: 
 Para uma gestão de sessão mais segura e fluida no frontend.
 
+---
 ### Rate Limiting: 
-Proteção contra ataques de força bruta ou excesso de requisições nos endpoints da API.
+Implemtação de Rate Limiting para controlar a quantidade de requisições suportadas em um endpoint em um certo período.
 
 
 
