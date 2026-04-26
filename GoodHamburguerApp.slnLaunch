@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Novo Perfil",
+    "Projects": [
+      {
+        "Path": "src\\GoodHamburguerApp.Api\\GoodHamburguerApp.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\GoodHamburguerApp.Web\\GoodHamburguerApp.Web.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

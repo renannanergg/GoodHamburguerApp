@@ -1,0 +1,271 @@
+﻿@page "/cardapio"
+@page "/cardapio/editar/{id:int}"
+@using GoodHamburguerApp.Application.DTOs
+@using GoodHamburguerApp.Application.UseCases.Pedidos.Commands
+@using System.Text.Json
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h3 class="mb-4">@(Id.HasValue ? $"✏️ Editando Pedido #{Id}" : "🍔 Monte seu Combo")</h3>
+            
+            @if (cardapio == null)
+            {
+                <div class="text-center my-5">
+                    <div class="spinner-border text-danger" role="status"></div>
+                    <p>Carregando cardápio...</p>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    @foreach (var item in cardapio)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm @(EstaNoCarrinho(item) ? "border-primary border-2" : "")">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="card-title">@item.Nome</h5>
+                                        <span class="badge bg-info text-dark">@item.Categoria</span>
+                                    </div>
+                                    <p class="card-text text-muted small">@item.Descricao</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <span class="h5 mb-0">@item.Preco.ToString("C")</span>
+                                        
+                                        @if (EstaNoCarrinho(item))
+                                        {
+                                            <button class="btn btn-danger btn-sm" @onclick="() => RemoverDoCarrinho(item)">Remover</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-success btn-sm" @onclick="() => AdicionarAoCarrinho(item)">Adicionar</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg sticky-top" style="top: 20px;">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h4 class="mb-0">🛒 Seu Pedido</h4>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(msgSucesso))
+                    {
+                        <div class="alert alert-success shadow-sm text-center">
+                            <p class="mb-3">@msgSucesso</p>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success btn-sm" @onclick="NovoPedido">Novo Pedido</button>
+                                <button class="btn btn-outline-dark btn-sm" @onclick='() => Nav.NavigateTo("/pedidos")'>Ir para Meus Pedidos</button>
+                            </div>
+                        </div>
+                    }
+                    else if (!carrinho.Any())
+                    {
+                        <p class="text-center text-muted my-5">Seu carrinho está vazio.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush mb-3">
+                            @foreach (var item in carrinho)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <strong>@item.Nome</strong><br />
+                                        <small class="text-muted">@item.Categoria</small>
+                                    </div>
+                                    <span>@item.Preco.ToString("C")</span>
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span>@subtotal.ToString("C")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success fw-bold">
+                                <span>Desconto:</span>
+                                <span>- @desconto.ToString("C")</span>
+                            </div>
+                            <hr />
+                            <div class="d-flex justify-content-between mb-4 h4">
+                                <span>Total:</span>
+                                <span class="text-primary">@total.ToString("C")</span>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(msgErro))
+                            {
+                                <div class="alert alert-warning small">@msgErro</div>
+                            }
+
+                            <button class="btn btn-primary w-100 btn-lg" @onclick="FinalizarPedido" disabled="@isEnviando">
+                                @if (isEnviando)
+                                {
+                                    <span>Processando...</span>
+                                }
+                                else
+                                {
+                                    <span>@(Id.HasValue ? "Salvar Alterações" : "Confirmar Pedido")</span>
+                                }
+                            </button>
+                            
+                            @if (Id.HasValue && !isEnviando)
+                            {
+                                <button class="btn btn-link w-100 text-muted mt-2" @onclick="NovoPedido">Cancelar Edição</button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private List<ItemDTO>? cardapio;
+    private List<ItemDTO> carrinho = new();
+    private decimal subtotal, desconto, total;
+    private string msgErro = "";
+    private string msgSucesso = "";
+    private bool isEnviando = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Carrega o cardápio (aumentei o limite para garantir que todos apareçam)
+        var response = await Http.GetFromJsonAsync<ApiResponse<PagedData<ItemDTO>>>("api/v1/itens/cardapio?limit=50");
+        cardapio = response?.Data?.Items?.ToList();
+
+        // Se houver um ID na URL, carrega os dados do pedido para edição
+        if (Id.HasValue)
+        {
+            await CarregarPedidoParaEdicao();
+        }
+    }
+
+    private async Task CarregarPedidoParaEdicao()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<ApiResponse<PedidoDTO>>($"api/v1/pedidos/{Id}");
+            if (response?.Data != null)
+            {
+                carrinho = response.Data.Itens.ToList();
+                CalcularTotais();
+            }
+        }
+        catch
+        {
+            msgErro = "Não foi possível carregar o pedido para edição.";
+        }
+    }
+
+    private void AdicionarAoCarrinho(ItemDTO item)
+    {
+        msgErro = "";
+        msgSucesso = "";
+        
+        if (carrinho.Any(i => i.Categoria == item.Categoria))
+        {
+            msgErro = $"Você já adicionou um {item.Categoria}!";
+            return;
+        }
+
+        carrinho.Add(item);
+        CalcularTotais();
+    }
+
+    private void RemoverDoCarrinho(ItemDTO item)
+    {
+        carrinho.RemoveAll(i => i.Id == item.Id);
+        CalcularTotais();
+    }
+
+    private bool EstaNoCarrinho(ItemDTO item) => carrinho.Any(i => i.Id == item.Id);
+
+    private void CalcularTotais()
+    {
+        subtotal = carrinho.Sum(i => i.Preco);
+
+        bool temSanduiche = carrinho.Any(i => i.Categoria == "Sanduiche");
+        bool temBatata = carrinho.Any(i => i.Categoria == "Batata");
+        bool temBebida = carrinho.Any(i => i.Categoria == "Refrigerante");
+
+        if (temSanduiche && temBatata && temBebida) desconto = subtotal * 0.20m;
+        else if (temSanduiche && temBebida) desconto = subtotal * 0.15m;
+        else if (temSanduiche && temBatata) desconto = subtotal * 0.10m;
+        else desconto = 0;
+
+        total = subtotal - desconto;
+    }
+
+    private async Task FinalizarPedido()
+    {
+        isEnviando = true;
+        msgErro = "";
+        msgSucesso = "";
+
+        HttpResponseMessage response;
+
+        if (Id.HasValue)
+        {
+            // MODO EDIÇÃO (PUT)
+            var command = new UpdatePedidoCommand { Id = Id.Value, ItensIds = carrinho.Select(i => i.Id).ToList() };
+            response = await Http.PutAsJsonAsync($"api/v1/pedidos/{Id}", command);
+        }
+        else
+        {
+            // MODO CRIAÇÃO (POST)
+            var command = new CreatePedidoCommand { ItensIds = carrinho.Select(i => i.Id).ToList() };
+            response = await Http.PostAsJsonAsync("api/v1/pedidos", command);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            if (Id.HasValue)
+            {
+                msgSucesso = $"✅ Pedido #{Id} atualizado com sucesso!";
+            }
+            else
+            {
+                var resultado = await response.Content.ReadFromJsonAsync<ApiResponse<JsonElement>>();
+                if (resultado != null && resultado.Data.TryGetProperty("id", out var idElement))
+                {
+                    msgSucesso = $"✅ Pedido #{idElement.GetInt32()} realizado com sucesso!";
+                }
+                else
+                {
+                    msgSucesso = "✅ Pedido efetuado com sucesso!";
+                }
+            }
+
+            carrinho.Clear();
+            CalcularTotais();
+        }
+        else
+        {
+            msgErro = "Erro ao processar o pedido. Tente novamente.";
+        }
+        
+        isEnviando = false;
+    }
+
+    private void NovoPedido()
+    {
+        Id = null;
+        msgSucesso = "";
+        msgErro = "";
+        carrinho.Clear();
+        CalcularTotais();
+        Nav.NavigateTo("/cardapio");
+    }
+}

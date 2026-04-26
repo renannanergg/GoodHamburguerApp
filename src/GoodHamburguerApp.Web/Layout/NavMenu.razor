@@ -1,0 +1,44 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="home">🍔 Good Hamburguer</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="home" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Início
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="cardapio">
+                <span class="bi bi-cart-fill-nav-menu" aria-hidden="true"></span> Cardápio
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="pedidos">
+                <span class="bi bi-list-ul-nav-menu" aria-hidden="true"></span> Meus Pedidos
+            </NavLink>
+        </div>
+        @* NOVA OPÇÃO ADICIONADA *@
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="buscar-pedido">
+                <span class="bi bi-search-nav-menu" aria-hidden="true"></span> Buscar Pedido
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
