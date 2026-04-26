@@ -1,6 +1,6 @@
 # 🍔 Good Hamburguer App
 
-> Solução corporativa para gestão de pedidos da lanchonete **Good Hamburguer**, desenvolvida com foco em alta performance, escalabilidade e Clean Architecture.
+> Solução para gestão de pedidos da lanchonete **Good Hamburguer**, desenvolvida com foco em alta performance, escalabilidade e Clean Architecture.
 
 ## 📋 Sobre o Projeto
 O **Good Hamburguer App** é um ecossistema completo para o gerenciamento de pedidos. O sistema permite que os clientes da lanchonete montem combos personalizados, aproveitando uma lógica de descontos progressivos automatizada, além de gerenciar o histórico completo de suas compras, buscar pedidos específicos e realizar edições em tempo real.
@@ -15,7 +15,7 @@ A aplicação utiliza os princípios da **Clean Architecture** e do **Domain-Dri
 * **Application**: Orquestra os casos de uso utilizando o padrão **CQRS** com a biblioteca **MediatR**.
 * **Infra**: Implementação do acesso a dados, repositórios e integração com o banco de dados via Entity Framework Core.
 * **IoC (Inversion of Control)**: Camada responsável pela Injeção de Dependência, isolando a configuração do restante do sistema.
-* **Api**: Interface RESTful com suporte a versionamento, documentação via Swagger e tratamento global de erros (Middlewares).
+* **Api**: Interface RESTful com versionamento (`v1.0`), documentação via Swagger, JWT e tratamento global de erros.
 * **Web**: Frontend moderno e reativo desenvolvido em **Blazor WebAssembly**.
 * **Tests (Unit & Integration)**: Suíte de testes automatizados para garantir a confiabilidade das regras de negócio e integrações.
 
@@ -48,6 +48,33 @@ O sistema aplica descontos automaticamente com base na composição do combo sel
 
 ---
 
+---
+
+## 📌 Endpoints da API (v1.0)
+
+### 🔑 Autenticação
+* `POST /api/auth/login`: Realiza a autenticação e retorna o Token JWT.
+
+### 🍔 Cardápio (Acesso Livre)
+* `GET /api/v1/itens/cardapio`: Lista itens do cardápio com suporte a paginação e **Cache-In-Memory**.
+
+### 🛒 Pedidos (Requer Autenticação)
+* `GET /api/v1/pedidos`: Lista todos os pedidos (paginado).
+* `GET /api/v1/pedidos/{id}`: Detalhes de um pedido específico.
+* `POST /api/v1/pedidos`: Criação de novo pedido.
+* `PUT /api/v1/pedidos/{id}`: Atualização de itens de um pedido.
+* `DELETE /api/v1/pedidos/{id}`: Exclusão de um pedido.
+
+---
+
+## 🔑 Credenciais de Acesso (Teste)
+Para acessar as funcionalidades de pedidos no Frontend ou via Swagger, utilize as seguintes credenciais:
+
+* **Usuário:** `admin`
+* **Senha:** `123456`
+
+---
+
 ## 🚀 Como Iniciar o Projeto
 
 ### Pré-requisitos
@@ -57,8 +84,7 @@ O sistema aplica descontos automaticamente com base na composição do combo sel
 
 ### 1. Clonar o Repositório
 ```bash
-git clone [https://github.com/seu-usuario/goodhamburguerapp.git](https://github.com/seu-usuario/goodhamburguerapp.git)
-cd goodhamburguerapp 
+git clone [https://github.com/renannanergg/GoodHamburguerApp.git](https://github.com/renannanergg/GoodHamburguerApp.git)
 
 ```
 
@@ -111,6 +137,28 @@ dotnet test
 
 
 
+## 🚀 O que foi deixado de fora do Projeto
+
+
+Embora o projeto esteja funcional e siga as melhores práticas de arquitetura, alguns melhorias foram deixadas para manter o foco no Domínio e na Arquitetura durante o desafio técnico:
+
+---
+### Mensageria (Event-Driven): 
+Utilização de Kafka para processamento assíncrono de pedidos e comunicação entre microserviços.
+
+--- 
+### Idempotência de Requisições: 
+Implementação de chaves de idempotência (Idempotency-Key) nos endpoints de criação de pedido para evitar duplicidade em caso de falhas de rede ou múltiplos cliques.
+
+---
+### Health Checks: 
+Implementação de endpoints /health para monitoramento do status do banco de dados e serviços dependentes por ferramentas de orquestração.
+
+### Refresh Tokens: 
+Para uma gestão de sessão mais segura e fluida no frontend.
+
+### Rate Limiting: 
+Proteção contra ataques de força bruta ou excesso de requisições nos endpoints da API.
 
 
 
