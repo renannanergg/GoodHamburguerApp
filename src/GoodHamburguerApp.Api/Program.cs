@@ -4,6 +4,16 @@ using GoodHamburguerApp.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultPolicy", policy =>
+    {
+        policy.WithOrigins("https://localhost:7157") 
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -33,6 +43,7 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
+app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 

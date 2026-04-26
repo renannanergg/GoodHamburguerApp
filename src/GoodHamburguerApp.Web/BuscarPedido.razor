@@ -1,0 +1,59 @@
+﻿@page "/buscar-pedido"
+@using GoodHamburguerApp.Application.DTOs
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h3 class="mb-4 text-center">🔍 Buscar Pedido</h3>
+            <div class="input-group mb-4 shadow-sm">
+                <input type="number" class="form-control" placeholder="Digite o número do pedido..." @bind="buscaId" />
+                <button class="btn btn-primary" @onclick="Buscar">Buscar</button>
+            </div>
+
+            @if (carregando)
+            {
+                <div class="text-center"><div class="spinner-border text-primary"></div></div>
+            }
+
+            @if (pedido != null)
+            {
+                <div class="card shadow border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Pedido #@pedido.Id</h5>
+                        <p class="mb-1 text-muted">@pedido.Itens.Count itens selecionados</p>
+                        <h4 class="text-primary mb-4">@pedido.Total.ToString("C")</h4>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" @onclick='() => Nav.NavigateTo($"/pedidos/{pedido.Id}")'>Ver Detalhes</button>
+                            <button class="btn btn-outline-warning" @onclick='() => Nav.NavigateTo($"/cardapio/editar/{pedido.Id}")'>Editar Itens</button>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (tentouBuscar)
+            {
+                <div class="alert alert-warning text-center">Pedido não encontrado.</div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private int? buscaId;
+    private PedidoDTO? pedido;
+    private bool carregando = false, tentouBuscar = false;
+
+    private async Task Buscar()
+    {
+        if (!buscaId.HasValue) return;
+        carregando = true; tentouBuscar = true; pedido = null;
+        try
+        {
+            var res = await Http.GetFromJsonAsync<ApiResponse<PedidoDTO>>($"api/v1/pedidos/{buscaId}");
+            pedido = res?.Data;
+        }
+        catch { pedido = null; }
+        carregando = false;
+    }
+}
