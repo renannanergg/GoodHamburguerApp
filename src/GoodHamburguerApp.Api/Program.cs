@@ -36,8 +36,6 @@ if (app.Environment.IsDevelopment())
                 $"/swagger/{description.GroupName}/swagger.json",
                 description.GroupName.ToUpperInvariant());
         }
-
-        options.RoutePrefix = string.Empty;
     });
 }
 
